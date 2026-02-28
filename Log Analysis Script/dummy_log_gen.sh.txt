@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+
+OUTPUT_FILE="${1:-access.log}"
+LINES="${2:-10000}"
+
+METHODS=("GET" "POST" "PUT" "DELETE")
+STATUS_CODES=(200 200 200 200 200 301 302 400 401 403 404 500 502 503)
+URLS=(
+    "/"
+    "/login"
+    "/logout"
+    "/dashboard"
+    "/api/v1/users"
+    "/api/v1/orders"
+    "/api/v1/products"
+    "/search"
+    "/cart"
+    "/checkout"
+    "/static/js/app.js"
+    "/static/css/style.css"
+)
+
+USER_AGENTS=(
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+    "curl/7.68.0"
+    "PostmanRuntime/7.32.3"
+    "Mozilla/5.0 (X11; Linux x86_64)"
+)
+
+generate_ip() {
+    echo "$((RANDOM%255)).$((RANDOM%255)).$((RANDOM%255)).$((RANDOM%255))"
+}
+
+generate_timestamp() {
+    date +"%d/%b/%Y:%H:%M:%S %z"
+}
+
+generate_query_string() {
+    if (( RANDOM % 2 )); then
+        echo "?id=$((RANDOM%1000))&ref=$((RANDOM%10))"
+    fi
+}
+
+echo "Generating $LINES log lines into $OUTPUT_FILE ..."
+
+> "$OUTPUT_FILE"
+
+for ((i=1; i<=LINES; i++)); do
+    IP=$(generate_ip)
+    TIMESTAMP=$(generate_timestamp)
+    METHOD=${METHODS[$RANDOM % ${#METHODS[@]}]}
+    URL=${URLS[$RANDOM % ${#URLS[@]}]}
+    QUERY=$(generate_query_string)
+    STATUS=${STATUS_CODES[$RANDOM % ${#STATUS_CODES[@]}]}
+    SIZE=$((RANDOM%5000 + 200))
+    UA=${USER_AGENTS[$RANDOM % ${#USER_AGENTS[@]}]}
+
+    echo "$IP - - [$TIMESTAMP] \"$METHOD $URL$QUERY HTTP/1.1\" $STATUS $SIZE \"-\" \"$UA\"" >> "$OUTPUT_FILE"
+done
+
+echo "Done."
