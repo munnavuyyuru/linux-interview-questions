@@ -5,11 +5,10 @@ A simple Bash script to analyze Nginx access logs and generate insightful report
 ## 📁 Project Structure
 
 ```
-log-analysis-nginx/
+Log Analysis Script/
 │
 ├── analyze_logs.sh          # Main analysis script
-├── sample.log               # Sample Nginx log file
-├── dummy_log_gen.sh         # Script to generate dummy logs
+├── dummy_log_gen.sh.txt         # Script to generate dummy logs
 ├── .gitignore               # Git ignore file
 └── README.md                # This file
 ```
